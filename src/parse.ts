@@ -1,4 +1,4 @@
-import { type Entry, type EntryRaw } from "./types.ts";
+import { type Entries, type Entry, type EntryRaw } from "./types.ts";
 
 /**
  * Parse raw entries
@@ -22,7 +22,7 @@ export function parseData(list: EntryRaw[]): Entry[] {
 
     console.debug(`Parsing date ${dateNew}`);
 
-    for (const [key, value] of Object.entries(entry)) {
+    for (const [key, value] of Object.entries(entry) as Entries<typeof entry>) {
       if (key == "Date") {
         entryNew["Date"] = dateNew;
       } else {
