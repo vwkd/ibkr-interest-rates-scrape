@@ -11,22 +11,34 @@ import { type Entry, type EntryRaw } from "./types.ts";
  * @returns list of parsed entries
  */
 export function parseData(list: EntryRaw[]): Entry[] {
-  return list.map((entry) =>
-    Object.fromEntries(
-      Object.entries(entry).map(([key, value]) => {
-        if (key == "Date") {
-          // todo: what happens if date is invalid?
-          const dateValue = Temporal.PlainDate.from(value);
-          return [key, dateValue];
-        } else {
-          const numberValue = parseFloat(
-            value
-              .replace(/\*$/, "")
-              .replace(/^\((.+)\)$/, "-$1"),
-          );
-          return [key, numberValue];
+  const listNew: Entry[] = [];
+
+  for (const entry of list) {
+    const entryNew = {} as Entry;
+
+    const date = entry["Date"];
+    // todo: what happens if date is invalid?
+    const dateNew = Temporal.PlainDate.from(date);
+
+    console.debug(`Parsing date ${dateNew}`);
+
+    for (const [key, value] of Object.entries(entry)) {
+      if (key == "Date") {
+        entryNew["Date"] = dateNew;
+      } else {
+        const numberValue = parseFloat(
+          value
+            .replace(/\*$/, "")
+            .replace(/^\((.+)\)$/, "-$1"),
+        );
+        if (Number.isNaN(numberValue)) {
+          console.warn(`Couldn't parse currency '${key}' value '${value}'`);
         }
-      }),
-    )
-  );
+
+        entryNew[key] = numberValue;
+      }
+    }
+  }
+
+  return listNew;
 }

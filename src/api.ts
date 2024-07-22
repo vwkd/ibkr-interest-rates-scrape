@@ -13,7 +13,7 @@ export async function getData(
   const year = date.year.toString();
   const month = date.month.toString().padStart(2, "0");
 
-  console.debug(`Fetching interest rates for ${year}/${month}`);
+  console.debug(`Fetching date ${date}`);
 
   const url =
     `https://www.interactivebrokers.com/en/accounts/fees/monthlyInterestRates.php?date=${year}${month}&cvs=1&ib_entity=llc`;
