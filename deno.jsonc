@@ -1,7 +1,7 @@
 {
   "tasks": {
     // todo: remove --unstable-temporal once it's stable
-    "scrape": "deno run --allow-net --unstable-temporal src/main.ts"
+    "scrape": "deno run --allow-net --allow-write --unstable-temporal src/main.ts"
   },
   "imports": {
     "@std/csv": "jsr:@std/csv@^0.224.3"
