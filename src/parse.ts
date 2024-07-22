@@ -7,38 +7,36 @@ import { type Entries, type Entry, type EntryRaw } from "./types.ts";
  * - parse other fields into number
  *   - remove star, doesn't distinguish preliminary rates, e.g. `6.014*`
  *   - replace wrapping parentheses with minus sign, e.g. `(0.018)`
+ *   - filter out invalid values, e.g. `N/A`
  * @param list list of raw entries
  * @returns list of parsed entries
  */
 export function parseData(list: EntryRaw[]): Entry[] {
-  const listNew: Entry[] = [];
+  return list.flatMap((entry) => {
+    const { "Date": dateString, ...rest } = entry;
 
-  for (const entry of list) {
-    const entryNew = {} as Entry;
-
-    const date = entry["Date"];
     // todo: what happens if date is invalid?
-    const dateNew = Temporal.PlainDate.from(date);
+    const date = Temporal.PlainDate.from(dateString);
 
-    console.debug(`Parsing date ${dateNew}`);
+    console.debug(`Parsing date ${date}`);
 
-    for (const [key, value] of Object.entries(entry) as Entries<typeof entry>) {
-      if (key == "Date") {
-        entryNew["Date"] = dateNew;
-      } else {
-        const numberValue = parseFloat(
-          value
+    return (Object.entries(rest) as Entries<typeof rest>)
+      .reduce((arr, [kind, valueString]) => {
+        const value = parseFloat(
+          valueString
             .replace(/\*$/, "")
             .replace(/^\((.+)\)$/, "-$1"),
         );
-        if (Number.isNaN(numberValue)) {
-          console.warn(`Couldn't parse currency '${key}' value '${value}'`);
+
+        if (Number.isNaN(value)) {
+          return arr;
+        } else {
+          return [...arr, {
+            date,
+            value,
+            kind,
+          }];
         }
-
-        entryNew[key] = numberValue;
-      }
-    }
-  }
-
-  return listNew;
+      }, [] as Entry[]);
+  });
 }

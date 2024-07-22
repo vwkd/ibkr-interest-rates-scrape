@@ -33,9 +33,11 @@ const CURRENCY_HEADERS = [
 export const COLUMN_HEADERS = [DATE_HEADER, ...CURRENCY_HEADERS] as const;
 
 export type EntryRaw = Record<typeof COLUMN_HEADERS[number], string>;
-export type Entry =
-  & Record<"Date", Temporal.PlainDate>
-  & Record<typeof CURRENCY_HEADERS[number], number>;
+export interface Entry {
+  date: Temporal.PlainDate;
+  value: number;
+  kind: typeof CURRENCY_HEADERS[number];
+}
 
 // note: patch for TypeScript types of Object.entries from https://stackoverflow.com/a/60142095/2607891
 export type Entries<T> = {
